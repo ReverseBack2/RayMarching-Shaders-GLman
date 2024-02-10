@@ -1,7 +1,4 @@
 
-ERROR: 0:158: 's' : undeclared identifier 
-ERROR: 0:158: 'Hit' : illegal vector field selection 
-ERROR: 0:158: 'color' : illegal vector field selection 
-ERROR: 0:158: 'assign' :  cannot convert from 'float' to '3-component vector of float'
-
+0(108) : error C0000: syntax error, unexpected reserved word "int", expecting ',' or ';' at token "int"
+0(114) : error C1503: undefined variable "coordID"
 

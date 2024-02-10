@@ -104,6 +104,18 @@ hitInfo getHitInfo( hitInfo h ) {
 void
 main( void )
 {
+	float res = 1025.;
+	int coordID = int(res*res*fCoord.y + res*fCoord.x);
+
+	float TimerIDFl = Timer;
+	float TimerDiv = 2.;
+	float TimerFreq = 10.*60.;
+	int TimerID = int(mod(TimerIDFl*TimerDiv*TimerFreq, TimerDiv));
+
+	if(mod(coordID-TimerID,TimerDiv) != 0){
+		discard;
+	}
+
 
 	vec3 cam = vec3( camX, camY, camZ);
 	vec3 ray = vec3(fCoord.x, fCoord.y, zoom);
