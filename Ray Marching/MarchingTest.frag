@@ -13,6 +13,9 @@ uniform bool useBack;
 uniform float angX, angY;
 uniform float xS;
 
+uniform float boxX;
+uniform float K;
+
 uniform float   uKa = 0.25; //(0.1)	 // coefficients of each type of lighting -- make sum to 1.0
 uniform float 	uKd = 0.6; //(0.6)
 uniform float 	uKs = 0.4; //(0.4)
@@ -23,14 +26,9 @@ uniform float Timer;
 
 struct sphere {
 	vec3 s;
+	vec3 color;
 	float r;
 };
-
-struct scene {
-	sphere s[2];
-	int sNum; 
-};
-
 struct hitInfo {
 	float t;	//ray ticks
 	float c;	//count
@@ -38,9 +36,15 @@ struct hitInfo {
 	vec3 norm;	//hit normal
 	vec3 color;	//color of hit
 };
+struct scene {
+	sphere s[2];
+	int sNum;
+	hitInfo Hit; 
+};
+
 
 vec3 RotateNormal( float angx, float angy, vec3 n );
-float dist( vec3 p, scene s );
+void dist( vec3 p, inout scene s, out float d );
 float signDistSph( vec3 p, sphere s );
 hitInfo getHitInfo( hitInfo h );
 
@@ -66,17 +70,25 @@ vec3 RotateNormal( float angx, float angy, vec3 n )
 
         return normalize( n );
 };
+float smin(float a, float b, float k) {
+  float h = clamp(0.5 + 0.5*(a-b)/k, 0.0, 1.0);
+  return mix(a, b, h) - k*h*(1.0-h);
+}
 
-float dist( vec3 p, scene s ) {
-	float d = 999999999.;
-	float dt = 999999999.;
+void dist( vec3 p, inout scene s, out float d ) {
+	d = 999999999.;
+	float dt[2];
+	float ct = s.sNum;
 	for(int i = 0; i < s.sNum; i++ ){
-		dt = signDistSph( p, s.s[i]);
-		if(dt < d)
-			d = dt;
+		dt[i] = signDistSph( p, s.s[i]);
+	}
+	d=dt[0];
+
+	for(int i = 0; i < ct; i++){
+		d = smin(d, dt[i],K);
 	}
 
-	return d;
+	s.Hit.color = mix(s.s[0].color, s.s[1].color, dt[1]/(0.01001+dt[0]));
 }
 
 float signDistSph( vec3 p, sphere S ){
@@ -113,10 +125,12 @@ main( void )
 
 	sphere Sphere;
 	Sphere.s = vec3(0., 0., 0.);
+	Sphere.color = vec3(1.0, 0., 0.);
 	Sphere.r = 0.5;
 	
 	sphere Sphere2;
-	Sphere2.s = vec3(0.75, 0.75, 0.);
+	Sphere2.s = vec3(boxX+0.8, 0., 0.);
+	Sphere2.color = vec3(0., 0., 1.0);
 	Sphere2.r = 0.15;
 
 	scene Scene;
@@ -125,27 +139,34 @@ main( void )
 	Scene.sNum = 2;
 
 	for(int i = 0; i < 80; i++) {
-		d = dist(p, Scene);
+		dist(p, Scene, d);
 		p += d*ray;
 		total_d += d; 
-		if(d < 0.002 ) {
+		if(d < 0.0002 ) {
 			hit.t = d;
 			hit.c = i;
 			break;
 		}
-		if(d > 400)
+		if(d > 4000){
+			hit.t = -1;
+			hit.c = i;
 			break;
+		}
 	}
 
 	// get info about what hit
+	hit.color = Scene.Hit.color;
 
 	hit = getHitInfo( hit );
-	float sc = 0.07;
-	hit.c = abs(mod(p.x-sc/2., sc)-(sc/2.));
+	// float sc = 0.07;
+	// hit.c = abs(mod(p.x-sc/2., sc)-(sc/2.));
 
 	gl_FragColor = vec4(0., 0., 0., 0.);
 	if (hit.t > 0){
-		gl_FragColor = vec4( 0., 0., hit.c/sc, 1.0 );
+		gl_FragColor = vec4( 0., 0., hit.c/30., 1.0 );
+		gl_FragColor = vec4(hit.color, 1.0);
+	}else{
+		gl_FragColor = vec4( 0., hit.c/60., 0., 1.0 );
 	}
 	
 }

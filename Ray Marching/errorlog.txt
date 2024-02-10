@@ -1,4 +1,7 @@
 
-ERROR: 0:139: 'sc' : undeclared identifier 
+ERROR: 0:158: 's' : undeclared identifier 
+ERROR: 0:158: 'Hit' : illegal vector field selection 
+ERROR: 0:158: 'color' : illegal vector field selection 
+ERROR: 0:158: 'assign' :  cannot convert from 'float' to '3-component vector of float'
 
 
