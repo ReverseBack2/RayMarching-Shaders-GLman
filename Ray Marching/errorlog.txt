@@ -1,0 +1,4 @@
+
+ERROR: 0:139: 'sc' : undeclared identifier 
+
+
