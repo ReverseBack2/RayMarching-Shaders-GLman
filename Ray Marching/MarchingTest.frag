@@ -16,6 +16,9 @@ uniform float xS;
 uniform float boxX;
 uniform float K;
 
+uniform int uTDiv;
+uniform float uTFreq;
+
 uniform float   uKa = 0.25; //(0.1)	 // coefficients of each type of lighting -- make sum to 1.0
 uniform float 	uKd = 0.6; //(0.6)
 uniform float 	uKs = 0.4; //(0.4)
@@ -108,8 +111,8 @@ main( void )
 	int coordID = int(res*res*fCoord.y + res*fCoord.x);
 
 	float TimerIDFl = Timer;
-	float TimerDiv = 2.;
-	float TimerFreq = 10.*60.;
+	float TimerDiv = float(uTDiv);
+	float TimerFreq = 10.*uTFreq;
 	int TimerID = int(mod(TimerIDFl*TimerDiv*TimerFreq, TimerDiv));
 
 	if(mod(coordID-TimerID,TimerDiv) != 0){

@@ -128,7 +128,7 @@ main( void )
 	int coordID = int(res*res*fCoord.y + res*fCoord.x);
 
 	float TimerIDFl = Timer;
-	float TimerDiv = 2.;
+	float TimerDiv = 1.;
 	float TimerFreq = 10.*120.;
 	int TimerID = int(mod(TimerIDFl*TimerDiv*TimerFreq, TimerDiv));
 
